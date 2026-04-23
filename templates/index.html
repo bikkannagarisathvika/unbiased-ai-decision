@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unbiased AI Decision</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background: #0f172a;
+        color: #fff;
+        padding: 30px;
+      }
+      h1 {
+        text-align: center;
+        color: #38bdf8;
+        margin-bottom: 10px;
+      }
+      p.subtitle {
+        text-align: center;
+        color: #94a3b8;
+        margin-bottom: 40px;
+      }
+      .cards {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+      }
+      .card {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 30px;
+        width: 220px;
+        text-align: center;
+      }
+      .card h2 {
+        font-size: 14px;
+        color: #94a3b8;
+        margin-bottom: 10px;
+      }
+      .card .value {
+        font-size: 36px;
+        font-weight: bold;
+      }
+      .card .label {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 5px;
+      }
+      .before {
+        color: #f87171;
+      }
+      .after {
+        color: #34d399;
+      }
+      .reduction {
+        color: #38bdf8;
+      }
+      .charts {
+        display: flex;
+        gap: 30px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 40px;
+      }
+      .chart-box {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 20px;
+        width: 380px;
+      }
+      .chart-box h3 {
+        text-align: center;
+        color: #94a3b8;
+        margin-bottom: 15px;
+      }
+      button {
+        display: block;
+        margin: 0 auto 40px auto;
+        padding: 12px 30px;
+        background: #38bdf8;
+        color: #0f172a;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0ea5e9;
+      }
+      #loading {
+        text-align: center;
+        color: #94a3b8;
+        margin-bottom: 20px;
+        display: none;
+      }
+      #gemini-box {
+        display: none;
+        max-width: 800px;
+        margin: 0 auto 40px auto;
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 30px;
+        border-left: 4px solid #38bdf8;
+      }
+      #gemini-box h3 {
+        color: #38bdf8;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+      #gemini-text {
+        color: #cbd5e1;
+        line-height: 1.8;
+        font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Unbiased AI Decision System</h1>
+    <p class="subtitle">
+      Detecting and Mitigating Bias in Automated Decision Making
+    </p>
+
+    <button onclick="loadResults()">Run Bias Analysis</button>
+    <div id="loading">Running analysis... this may take a minute...</div>
+
+    <div class="cards" id="cards" style="display: none">
+      <div class="card">
+        <h2>Bias Before</h2>
+        <div class="value before" id="bias_before">-</div>
+        <div class="label">Demographic Parity Score</div>
+      </div>
+      <div class="card">
+        <h2>Bias After</h2>
+        <div class="value after" id="bias_after">-</div>
+        <div class="label">Demographic Parity Score</div>
+      </div>
+      <div class="card">
+        <h2>Bias Reduced By</h2>
+        <div class="value reduction" id="bias_reduction">-</div>
+        <div class="label">Percentage Improvement</div>
+      </div>
+      <div class="card">
+        <h2>Accuracy Before</h2>
+        <div class="value before" id="accuracy_before">-</div>
+        <div class="label">Model Accuracy %</div>
+      </div>
+      <div class="card">
+        <h2>Accuracy After</h2>
+        <div class="value after" id="accuracy_after">-</div>
+        <div class="label">Model Accuracy %</div>
+      </div>
+    </div>
+
+    <div class="charts" id="charts" style="display: none">
+      <div class="chart-box">
+        <h3>Bias Score Comparison</h3>
+        <canvas id="biasChart"></canvas>
+      </div>
+      <div class="chart-box">
+        <h3>Accuracy Comparison</h3>
+        <canvas id="accuracyChart"></canvas>
+      </div>
+    </div>
+
+    <div id="gemini-box">
+      <h3>🤖 Gemini AI Explanation</h3>
+      <p id="gemini-text"></p>
+    </div>
+
+    <script>
+      function loadResults() {
+        document.getElementById("loading").style.display = "block";
+        document.getElementById("cards").style.display = "none";
+        document.getElementById("charts").style.display = "none";
+        document.getElementById("gemini-box").style.display = "none";
+
+        fetch("/results")
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("cards").style.display = "flex";
+            document.getElementById("charts").style.display = "flex";
+            document.getElementById("gemini-box").style.display = "block";
+
+            document.getElementById("bias_before").innerText = data.bias_before;
+            document.getElementById("bias_after").innerText = data.bias_after;
+            document.getElementById("bias_reduction").innerText =
+              data.bias_reduction + "%";
+            document.getElementById("accuracy_before").innerText =
+              data.accuracy_before + "%";
+            document.getElementById("accuracy_after").innerText =
+              data.accuracy_after + "%";
+            document.getElementById("gemini-text").innerText = data.explanation;
+
+            new Chart(document.getElementById("biasChart"), {
+              type: "bar",
+              data: {
+                labels: ["Before Mitigation", "After Mitigation"],
+                datasets: [
+                  {
+                    label: "Bias Score",
+                    data: [data.bias_before, data.bias_after],
+                    backgroundColor: ["#f87171", "#34d399"],
+                  },
+                ],
+              },
+              options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } },
+              },
+            });
+
+            new Chart(document.getElementById("accuracyChart"), {
+              type: "bar",
+              data: {
+                labels: ["Before Mitigation", "After Mitigation"],
+                datasets: [
+                  {
+                    label: "Accuracy %",
+                    data: [data.accuracy_before, data.accuracy_after],
+                    backgroundColor: ["#f87171", "#34d399"],
+                  },
+                ],
+              },
+              options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: false, min: 70 } },
+              },
+            });
+          })
+          .catch((err) => {
+            document.getElementById("loading").innerText =
+              "Error loading results. Check console.";
+          });
+      }
+    </script>
+  </body>
+</html>
