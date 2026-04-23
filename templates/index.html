@@ -3,8 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Unbiased AI Decision</title>
+    <title>Unbiased AI Decision System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
@@ -12,197 +16,560 @@
         box-sizing: border-box;
       }
       body {
-        font-family: Arial, sans-serif;
-        background: #0f172a;
-        color: #fff;
-        padding: 30px;
+        font-family: "Inter", Arial, sans-serif;
+        background: #f0f4f8;
+        color: #1a202c;
+        min-height: 100vh;
       }
-      h1 {
+
+      .header {
+        background: #fff;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 18px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .header-logo {
+        width: 36px;
+        height: 36px;
+        background: #1a56db;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+      }
+      .header-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1a202c;
+      }
+      .header-subtitle {
+        font-size: 13px;
+        color: #718096;
+        margin-top: 2px;
+      }
+      .header-badges {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .sdg-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .sdg-10 {
+        background: #fce7f3;
+        color: #9d174d;
+        border: 1px solid #fbcfe8;
+      }
+      .sdg-8 {
+        background: #ede9fe;
+        color: #5b21b6;
+        border: 1px solid #ddd6fe;
+      }
+
+      .main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      .hero {
+        background: linear-gradient(135deg, #1a56db 0%, #1e40af 100%);
+        border-radius: 16px;
+        padding: 50px 40px;
         text-align: center;
-        color: #38bdf8;
-        margin-bottom: 10px;
+        margin-bottom: 32px;
+        color: white;
+        box-shadow: 0 4px 20px rgba(26, 86, 219, 0.3);
       }
-      p.subtitle {
+      .hero h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+      }
+      .hero p {
+        font-size: 16px;
+        opacity: 0.85;
+        max-width: 600px;
+        margin: 0 auto 30px auto;
+        line-height: 1.6;
+      }
+
+      .upload-section {
+        background: rgba(255, 255, 255, 0.15);
+        border: 2px dashed rgba(255, 255, 255, 0.4);
+        border-radius: 12px;
+        padding: 24px;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .upload-section p {
+        font-size: 14px;
+        opacity: 0.9;
+        margin-bottom: 8px;
+      }
+      .upload-section .hint {
+        font-size: 11px;
+        opacity: 0.65;
+        margin-bottom: 12px;
+        margin-top: -4px;
+      }
+      .upload-section input[type="file"] {
+        color: white;
+        font-size: 13px;
+        margin-bottom: 12px;
+        width: 100%;
+      }
+
+      .column-selector {
+        margin-bottom: 14px;
+        text-align: left;
+      }
+      .column-selector label {
+        font-size: 13px;
+        opacity: 0.9;
+        display: block;
+        margin-bottom: 6px;
+        color: white;
+      }
+      .column-selector select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: none;
+        font-size: 14px;
+        color: #1a202c;
+        font-family: "Inter", Arial, sans-serif;
+      }
+
+      .divider {
+        font-size: 13px;
+        opacity: 0.6;
+        margin-bottom: 14px;
+        color: white;
+      }
+      .run-btn {
+        background: #fff;
+        color: #1a56db;
+        border: none;
+        border-radius: 8px;
+        padding: 13px 36px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: "Inter", Arial, sans-serif;
+        transition: all 0.2s;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      .run-btn:hover {
+        background: #eff6ff;
+        transform: translateY(-1px);
+      }
+
+      #loading {
+        display: none;
         text-align: center;
-        color: #94a3b8;
-        margin-bottom: 40px;
+        padding: 20px;
+        color: #4a5568;
+        font-size: 15px;
       }
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #1a56db;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      #error-box {
+        display: none;
+        max-width: 560px;
+        margin: 0 auto 24px auto;
+        background: #fff5f5;
+        padding: 16px 20px;
+        border-radius: 8px;
+        border: 1px solid #fed7d7;
+        border-left: 4px solid #e53e3e;
+        color: #c53030;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      #dataset-info {
+        display: none;
+        text-align: center;
+        color: #718096;
+        font-size: 13px;
+        margin: 0 auto 24px auto;
+        background: #fff;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        max-width: 560px;
+      }
+
+      .section-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 16px;
+      }
+
       .cards {
         display: flex;
-        gap: 20px;
+        gap: 16px;
         justify-content: center;
-        margin-bottom: 40px;
+        margin-bottom: 32px;
         flex-wrap: wrap;
       }
       .card {
-        background: #1e293b;
+        background: #fff;
         border-radius: 12px;
-        padding: 30px;
-        width: 220px;
+        padding: 24px 20px;
+        width: 180px;
         text-align: center;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        border: 1px solid #e2e8f0;
+        transition: box-shadow 0.2s;
+      }
+      .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
       .card h2 {
-        font-size: 14px;
-        color: #94a3b8;
-        margin-bottom: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
       }
       .card .value {
-        font-size: 36px;
-        font-weight: bold;
+        font-size: 30px;
+        font-weight: 700;
       }
       .card .label {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 5px;
+        font-size: 11px;
+        color: #a0aec0;
+        margin-top: 6px;
       }
       .before {
-        color: #f87171;
+        color: #e53e3e;
       }
       .after {
-        color: #34d399;
+        color: #38a169;
       }
       .reduction {
-        color: #38bdf8;
+        color: #1a56db;
       }
+
       .charts {
         display: flex;
-        gap: 30px;
+        gap: 20px;
         justify-content: center;
         flex-wrap: wrap;
-        margin-bottom: 40px;
+        margin-bottom: 32px;
       }
       .chart-box {
-        background: #1e293b;
+        background: #fff;
         border-radius: 12px;
-        padding: 20px;
-        width: 380px;
+        padding: 24px;
+        width: 370px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        border: 1px solid #e2e8f0;
       }
       .chart-box h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 16px;
         text-align: center;
-        color: #94a3b8;
-        margin-bottom: 15px;
       }
-      button {
-        display: block;
-        margin: 0 auto 40px auto;
-        padding: 12px 30px;
-        background: #38bdf8;
-        color: #0f172a;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #0ea5e9;
-      }
-      #loading {
-        text-align: center;
-        color: #94a3b8;
-        margin-bottom: 20px;
-        display: none;
-      }
+
       #gemini-box {
         display: none;
-        max-width: 800px;
+        max-width: 760px;
         margin: 0 auto 40px auto;
-        background: #1e293b;
+        background: #fff;
         border-radius: 12px;
-        padding: 30px;
-        border-left: 4px solid #38bdf8;
+        padding: 28px 32px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+        border: 1px solid #e2e8f0;
+        border-top: 4px solid #1a56db;
       }
       #gemini-box h3 {
-        color: #38bdf8;
-        margin-bottom: 15px;
-        font-size: 18px;
+        color: #1a56db;
+        margin-bottom: 14px;
+        font-size: 16px;
+        font-weight: 700;
       }
       #gemini-text {
-        color: #cbd5e1;
+        color: #4a5568;
         line-height: 1.8;
         font-size: 15px;
+        white-space: pre-line;
+      }
+
+      .footer {
+        text-align: center;
+        color: #a0aec0;
+        font-size: 12px;
+        padding: 20px;
+        border-top: 1px solid #e2e8f0;
+        margin-top: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .header {
+          flex-direction: column;
+          gap: 12px;
+          padding: 16px;
+        }
+        .hero h2 {
+          font-size: 22px;
+        }
+        .card {
+          width: 140px;
+        }
+        .chart-box {
+          width: 100%;
+        }
       }
     </style>
   </head>
   <body>
-    <h1>Unbiased AI Decision System</h1>
-    <p class="subtitle">
-      Detecting and Mitigating Bias in Automated Decision Making
-    </p>
-
-    <button onclick="loadResults()">Run Bias Analysis</button>
-    <div id="loading">Running analysis... this may take a minute...</div>
-
-    <div class="cards" id="cards" style="display: none">
-      <div class="card">
-        <h2>Bias Before</h2>
-        <div class="value before" id="bias_before">-</div>
-        <div class="label">Demographic Parity Score</div>
+    <div class="header">
+      <div class="header-left">
+        <div class="header-logo">AI</div>
+        <div>
+          <div class="header-title">Unbiased AI Decision System</div>
+          <div class="header-subtitle">
+            Fairness Auditing & Bias Mitigation Platform
+          </div>
+        </div>
       </div>
-      <div class="card">
-        <h2>Bias After</h2>
-        <div class="value after" id="bias_after">-</div>
-        <div class="label">Demographic Parity Score</div>
-      </div>
-      <div class="card">
-        <h2>Bias Reduced By</h2>
-        <div class="value reduction" id="bias_reduction">-</div>
-        <div class="label">Percentage Improvement</div>
-      </div>
-      <div class="card">
-        <h2>Accuracy Before</h2>
-        <div class="value before" id="accuracy_before">-</div>
-        <div class="label">Model Accuracy %</div>
-      </div>
-      <div class="card">
-        <h2>Accuracy After</h2>
-        <div class="value after" id="accuracy_after">-</div>
-        <div class="label">Model Accuracy %</div>
+      <div class="header-badges">
+        <span class="sdg-badge sdg-10">🎯 SDG 10 — Reduced Inequalities</span>
+        <span class="sdg-badge sdg-8">💼 SDG 8 — Decent Work</span>
       </div>
     </div>
 
-    <div class="charts" id="charts" style="display: none">
-      <div class="chart-box">
-        <h3>Bias Score Comparison</h3>
-        <canvas id="biasChart"></canvas>
+    <div class="main">
+      <div class="hero">
+        <h2>Detect & Eliminate AI Bias</h2>
+        <p>
+          Upload any hiring or decision dataset. Our system automatically
+          detects bias, applies mitigation, and shows you a clear before vs
+          after comparison.
+        </p>
+
+        <div class="upload-section">
+          <p>📂 Upload a classification CSV (optional)</p>
+          <p class="hint">
+            Last column must be a binary outcome (yes/no, 0/1, hired/rejected)
+          </p>
+          <input
+            type="file"
+            id="csvFile"
+            accept=".csv"
+            onchange="handleFileUpload()"
+          />
+
+          <div
+            id="column-selector"
+            class="column-selector"
+            style="display: none"
+          >
+            <label>Select sensitive feature to analyze:</label>
+            <select id="sensitiveSelect"></select>
+          </div>
+
+          <div class="divider">— or use default hiring dataset —</div>
+          <button class="run-btn" onclick="loadResults()">
+            ▶ Run Bias Analysis
+          </button>
+        </div>
       </div>
-      <div class="chart-box">
-        <h3>Accuracy Comparison</h3>
-        <canvas id="accuracyChart"></canvas>
+
+      <div id="loading">
+        <span class="spinner"></span>
+        Running bias analysis... this may take a minute...
+      </div>
+
+      <div id="error-box"></div>
+      <div id="dataset-info"></div>
+
+      <div id="results-section" style="display: none">
+        <div
+          class="section-label"
+          style="text-align: center; margin-bottom: 20px"
+        >
+          Bias Analysis Results
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <h2>Bias Before</h2>
+            <div class="value before" id="bias_before">-</div>
+            <div class="label">Demographic Parity</div>
+          </div>
+          <div class="card">
+            <h2>Bias After</h2>
+            <div class="value after" id="bias_after">-</div>
+            <div class="label">Demographic Parity</div>
+          </div>
+          <div class="card">
+            <h2>Bias Reduced</h2>
+            <div class="value reduction" id="bias_reduction">-</div>
+            <div class="label">Percentage Improvement</div>
+          </div>
+          <div class="card">
+            <h2>Disparate Impact Before</h2>
+            <div class="value before" id="di_before">-</div>
+            <div class="label">1.0 = perfectly fair</div>
+          </div>
+          <div class="card">
+            <h2>Disparate Impact After</h2>
+            <div class="value after" id="di_after">-</div>
+            <div class="label">1.0 = perfectly fair</div>
+          </div>
+          <div class="card">
+            <h2>Accuracy Before</h2>
+            <div class="value before" id="accuracy_before">-</div>
+            <div class="label">Model Accuracy %</div>
+          </div>
+          <div class="card">
+            <h2>Accuracy After</h2>
+            <div class="value after" id="accuracy_after">-</div>
+            <div class="label">Model Accuracy %</div>
+          </div>
+        </div>
+
+        <div class="charts">
+          <div class="chart-box">
+            <h3>📊 Demographic Parity Comparison</h3>
+            <canvas id="biasChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <h3>⚖️ Disparate Impact Comparison</h3>
+            <canvas id="diChart"></canvas>
+          </div>
+          <div class="chart-box">
+            <h3>🎯 Accuracy Comparison</h3>
+            <canvas id="accuracyChart"></canvas>
+          </div>
+        </div>
+
+        <div id="gemini-box">
+          <h3>🤖 Gemini AI Explanation</h3>
+          <p id="gemini-text"></p>
+        </div>
       </div>
     </div>
 
-    <div id="gemini-box">
-      <h3>🤖 Gemini AI Explanation</h3>
-      <p id="gemini-text"></p>
+    <div class="footer">
+      Built with Fairlearn · Gemini API · Google Cloud Run &nbsp;|&nbsp;
+      Supports UN SDG 10 & SDG 8
     </div>
 
     <script>
+      let biasChart, diChart, accuracyChart;
+
+      function handleFileUpload() {
+        const file = document.getElementById("csvFile").files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const firstLine = e.target.result.split("\n")[0];
+          const columns = firstLine
+            .split(",")
+            .map((c) => c.trim().replace(/"/g, ""));
+          const select = document.getElementById("sensitiveSelect");
+          select.innerHTML = columns
+            .map((col) => `<option value="${col}">${col}</option>`)
+            .join("");
+          document.getElementById("column-selector").style.display = "block";
+        };
+        reader.readAsText(file);
+      }
+
       function loadResults() {
         document.getElementById("loading").style.display = "block";
-        document.getElementById("cards").style.display = "none";
-        document.getElementById("charts").style.display = "none";
+        document.getElementById("results-section").style.display = "none";
         document.getElementById("gemini-box").style.display = "none";
+        document.getElementById("dataset-info").style.display = "none";
+        document.getElementById("error-box").style.display = "none";
 
-        fetch("/results")
+        const fileInput = document.getElementById("csvFile");
+        const formData = new FormData();
+        if (fileInput.files.length > 0) {
+          formData.append("file", fileInput.files[0]);
+          const selected = document.getElementById("sensitiveSelect").value;
+          if (selected) formData.append("sensitive_feature", selected);
+        }
+
+        fetch("/results", { method: "POST", body: formData })
           .then((res) => res.json())
           .then((data) => {
             document.getElementById("loading").style.display = "none";
-            document.getElementById("cards").style.display = "flex";
-            document.getElementById("charts").style.display = "flex";
+
+            if (data.error) {
+              const errorBox = document.getElementById("error-box");
+              errorBox.style.display = "block";
+              errorBox.innerHTML = `⚠️ <strong>Dataset Error:</strong> ${data.error}`;
+              return;
+            }
+
+            document.getElementById("results-section").style.display = "block";
             document.getElementById("gemini-box").style.display = "block";
+
+            if (data.total_records) {
+              const info = document.getElementById("dataset-info");
+              info.style.display = "block";
+              info.innerHTML = `✅ Analyzed <strong>${data.total_records.toLocaleString()}</strong> records &nbsp;·&nbsp; Sensitive feature: <strong>${data.sensitive_feature}</strong>`;
+            }
 
             document.getElementById("bias_before").innerText = data.bias_before;
             document.getElementById("bias_after").innerText = data.bias_after;
             document.getElementById("bias_reduction").innerText =
               data.bias_reduction + "%";
+            document.getElementById("di_before").innerText = data.di_before;
+            document.getElementById("di_after").innerText = data.di_after;
             document.getElementById("accuracy_before").innerText =
               data.accuracy_before + "%";
             document.getElementById("accuracy_after").innerText =
               data.accuracy_after + "%";
             document.getElementById("gemini-text").innerText = data.explanation;
 
-            new Chart(document.getElementById("biasChart"), {
+            if (biasChart) biasChart.destroy();
+            if (diChart) diChart.destroy();
+            if (accuracyChart) accuracyChart.destroy();
+
+            biasChart = new Chart(document.getElementById("biasChart"), {
               type: "bar",
               data: {
                 labels: ["Before Mitigation", "After Mitigation"],
@@ -210,37 +577,88 @@
                   {
                     label: "Bias Score",
                     data: [data.bias_before, data.bias_after],
-                    backgroundColor: ["#f87171", "#34d399"],
+                    backgroundColor: ["#fc8181", "#68d391"],
+                    borderRadius: 6,
                   },
                 ],
               },
               options: {
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    grid: { color: "#f0f4f8" },
+                    ticks: { color: "#718096" },
+                  },
+                  x: { ticks: { color: "#718096" } },
+                },
               },
             });
 
-            new Chart(document.getElementById("accuracyChart"), {
+            diChart = new Chart(document.getElementById("diChart"), {
               type: "bar",
               data: {
                 labels: ["Before Mitigation", "After Mitigation"],
                 datasets: [
                   {
-                    label: "Accuracy %",
-                    data: [data.accuracy_before, data.accuracy_after],
-                    backgroundColor: ["#f87171", "#34d399"],
+                    label: "Disparate Impact",
+                    data: [data.di_before, data.di_after],
+                    backgroundColor: ["#fc8181", "#68d391"],
+                    borderRadius: 6,
                   },
                 ],
               },
               options: {
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: false, min: 70 } },
+                scales: {
+                  y: {
+                    beginAtZero: false,
+                    min: 0,
+                    max: 1.2,
+                    grid: { color: "#f0f4f8" },
+                    ticks: { color: "#718096" },
+                  },
+                  x: { ticks: { color: "#718096" } },
+                },
               },
             });
+
+            accuracyChart = new Chart(
+              document.getElementById("accuracyChart"),
+              {
+                type: "bar",
+                data: {
+                  labels: ["Before Mitigation", "After Mitigation"],
+                  datasets: [
+                    {
+                      label: "Accuracy %",
+                      data: [data.accuracy_before, data.accuracy_after],
+                      backgroundColor: ["#fc8181", "#68d391"],
+                      borderRadius: 6,
+                    },
+                  ],
+                },
+                options: {
+                  plugins: { legend: { display: false } },
+                  scales: {
+                    y: {
+                      beginAtZero: false,
+                      min: 70,
+                      grid: { color: "#f0f4f8" },
+                      ticks: { color: "#718096" },
+                    },
+                    x: { ticks: { color: "#718096" } },
+                  },
+                },
+              },
+            );
           })
           .catch((err) => {
-            document.getElementById("loading").innerText =
-              "Error loading results. Check console.";
+            document.getElementById("loading").style.display = "none";
+            const errorBox = document.getElementById("error-box");
+            errorBox.style.display = "block";
+            errorBox.innerHTML =
+              "⚠️ <strong>Connection Error:</strong> Could not reach the server. Please try again.";
           });
       }
     </script>
